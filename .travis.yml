@@ -1,0 +1,73 @@
+language: cpp
+
+cache:
+  - directories:
+    - $HOME/.cache
+
+jobs:
+  include:
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-9
+      env:
+        - MATRIX_EVAL="CXX=g++-9"
+
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'deb https://apt.llvm.org/xenial/ llvm-toolchain-xenial-10 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+          packages:
+            - clang-10
+      env:
+        - MATRIX_EVAL="CXX=clang++-10"
+
+    - os: osx
+      osx_image: xcode11.3
+      env:
+        - MATRIX_EVAL="CC=clang CXX=clang++"
+
+before_install:
+  - OS=linux
+  - ARCH=x86_64
+  - V_BAZEL=3.1.0
+
+  # install bazel
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then OS=darwin; fi
+  - GH_BASE="https://github.com/bazelbuild/bazel/releases/download/$V_BAZEL"
+  - GH_ARTIFACT="bazel-$V_BAZEL-installer-$OS-$ARCH.sh"
+  - URL="$GH_BASE/$GH_ARTIFACT"
+  - echo $URL
+  - wget -O install.sh $URL
+  - chmod +x install.sh
+  - ./install.sh --user
+  - rm -f install.sh
+
+  # install clang-format
+  - if [[ "$OS" == "linux" ]]; then sudo apt install clang-format; fi
+  - clang-format --version
+
+before_script:
+  - eval "${MATRIX_EVAL}"
+
+script:
+  - find . -name "*.h" -o -name "*.cpp" -exec clang-format -i {} \;
+  # throw error if the project doesn't follow clang-format
+  - git diff --exit-code
+
+  # run unit tests
+  - |
+    bazel \
+      --output_base=$HOME/.cache/bazel \
+      --batch \
+      --host_jvm_args=-Xmx500m \
+      --host_jvm_args=-Xms500m \
+      test //...
