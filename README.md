@@ -1,9 +1,10 @@
 ﻿Priority Queue
 =================
 
+[![Build Status](https://travis-ci.com/jkomyno/priority-queue.svg?branch=master)](https://travis-ci.com/jkomyno/priority-queue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
-This package provides a header-only, fast and dependency-free C++17 implementation of Heaps and Priority Queues.
+This package provides a header-only, generic and dependency-free C++17 implementation of Heaps and Priority Queues.
 It exposes two namespaces: `heap` and `priority_queue`.
 
 # Why
