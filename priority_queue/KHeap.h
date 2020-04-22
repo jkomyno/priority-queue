@@ -62,11 +62,10 @@ namespace heap {
             std::size_t comp_est = i;
 
             while (!is_leaf(i)) {
-                // O(K)
+                // Time: O(K)
                 for (std::size_t j = 0; j < K; ++j) {
                     const auto son = child(i, j);
-                    if (son < len && this->comp(this->nodes.at(i), this->nodes.at(son)) &&
-                        this->comp(this->nodes.at(comp_est), this->nodes.at(son))) {
+                    if (son < len && this->comp(this->nodes.at(comp_est), this->nodes.at(son))) {
                         comp_est = son;
                     }
                 }
