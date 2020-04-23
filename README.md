@@ -1,26 +1,39 @@
-﻿Priority Queue
-=================
+﻿# Priority Queue
 
 [![Build Status](https://travis-ci.org/jkomyno/priority-queue.svg?branch=master)](https://travis-ci.org/jkomyno/priority-queue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/939d15efb7374e85a92250ac7bbecbe0)](https://www.codacy.com/manual/jkomyno/priority-queue?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jkomyno/priority-queue&amp;utm_campaign=Badge_Grade)
 
 This package provides a header-only, generic and dependency-free C++17 implementation of Heaps and Priority Queues.
 It exposes two namespaces: `heap` and `priority_queue`.
 
-# Why
+## Table of Contents
+
+-   [Why](#why)
+-   [Heap](#heap)
+    -   [Example usage of BinaryHeap](#example-usage-of-binaryheap)
+    -   [Example usage of KHeap](#example-usage-of-kheap)
+-   [Priority Queue](#priority-queue-1)
+    -   [Example usage of PriorityQueue with BinaryHeap](#example-usage-of-priorityqueue-with-binaryheap)
+    -   [Example usage of PriorityQueue with KHeap](#example-usage-of-priorityqueue-with-kheap)
+-   [Best practices adopted](#best-practices-adopted)
+-   [Test](#test)
+-   [Contributing](#contributing)
+
+## Why
 
 > Why did you have to go through the hassle of creating your own Heap and Priority Queue implementations when
-the standard library offers `std::make_heap` and the `std::priority_queue container` adaptor?
+> the standard library offers `std::make_heap` and the `std::priority_queue container` adaptor?
 
 My answers to this question are multifold:
 
-- The STL doesn't offer any method to update the keys when the elements are stored in the Heap.
-Doing that manually can be non-trivial and usually requires at least O(N) time (while this library achieves that faster).
-- The STL doesn't provide any way of creating K-ary Heaps or Priority Queues based on K-ary Heaps.
-- For University, I was required to implement Prim's algorithm, but wasn't allowed to use `std::make_heap` and `std::priority_queue container`.
-- I've used this project as an exercise to enhance my comprehension of C++17 and its best practices, as well as *DRY* principles.
+-   The STL doesn't offer any method to update the keys when the elements are stored in the Heap.
+    Doing that manually can be non-trivial and usually requires at least O(N) time (while this library achieves that faster).
+-   The STL doesn't provide any way of creating K-ary Heaps or Priority Queues based on K-ary Heaps.
+-   For University, I was required to implement Prim's algorithm, but wasn't allowed to use `std::make_heap` and `std::priority_queue container`.
+-   I've used this project as an exercise to enhance my comprehension of C++17 and its best practices, as well as _DRY_ principles.
 
-# Heap
+## Heap
 
 The `heap` namespace contains the abstract class [`Heap`](./priority_queue/Heap.h) and the concrete implementations [`BinaryHeap`](./priority_queue/BinaryHeap.h) (for Binary Heaps)
 and [`KHeap`](./priority_queue/KHeap.h) (for K-ary Heaps). A Binary Heap can be seen as a complete binary tree which satisfies the heap ordering property.
@@ -32,10 +45,10 @@ a Max Heap, the given comparator should be `std::greater<>{}`.
 
 A number of utility factory functions are provided to easily create the type of Heap you want, namely:
 
-- `make_min_heap<bool IsAlreadyHeap = false, typename T>`: create a Min Binary Heap starting from a vector of values.
-- `make_max_heap<bool IsAlreadyHeap = false, typename T>`: create a Max Binary Heap starting from a vector of values.
-- `make_min_k_heap<std::size_t K, bool IsAlreadyHeap = false, typename T>`: create a Min K-ary Heap starting from a vector of keys and a vector of values.
-- `make_max_k_heap<std::size_t K, bool IsAlreadyHeap = false, typename T>`: create a Max K-ary Heap starting from a vector of keys and a vector of values.
+-   `make_min_heap<bool IsAlreadyHeap = false, typename T>`: create a Min Binary Heap starting from a vector of values.
+-   `make_max_heap<bool IsAlreadyHeap = false, typename T>`: create a Max Binary Heap starting from a vector of values.
+-   `make_min_k_heap<std::size_t K, bool IsAlreadyHeap = false, typename T>`: create a Min K-ary Heap starting from a vector of keys and a vector of values.
+-   `make_max_k_heap<std::size_t K, bool IsAlreadyHeap = false, typename T>`: create a Max K-ary Heap starting from a vector of keys and a vector of values.
 
 Each of these functions supports both copy and move semantics for the given inputs.
 
@@ -43,7 +56,7 @@ Optionally, if you know that the vector you're feeding to the Heap implementatio
 (i.e. `std::is_heap(your_vector)` evaluates to `true`), you can set the template argument `IsAlreadyHeap` to true.
 This avoids the `O(N)` time required to build the heap. This template argument is checked at compile time thanks to `if constexpr`.
 
-## Example usage of BinaryHeap
+### Example usage of BinaryHeap
 
 ```c++
 #include <iostream>
@@ -90,7 +103,7 @@ int main() {
 }
 ```
 
-## Example usage of KHeap
+### Example usage of KHeap
 
 ```c++
 #include <iostream>
@@ -139,7 +152,7 @@ int main() {
 }
 ```
 
-# Priority Queue
+## Priority Queue
 
 The `priority_queue` namespace contains the concrete class [`PriorityQueue`](./priority_queue/PriorityQueue.h).
 It implements a Priority Queue data-structure based on a generic Heap.
@@ -149,13 +162,13 @@ A SFINAE check ensures that `PriorityQueue` can only extend a concrete implement
 
 The main methods exposed by `PriorityQueue` are:
 
-- `size()`: return the number of elements in the heap. Time complexity: O(1).
-- `empty()`: return true iff the heap is empty. Time complexity: O(1).
-- `push(const Key& key, const T& element)`: add a new element to the heap and associates the given key to it. Time complexity: O(logN) amortized if using BinaryHeap, O(k*log_k(N)) amortized instead.
-- `update_key(const Key& key, const T& element)`: update the key of an existing element in the priority queue. Time: O(logN) amortized if using BinaryHeap, O(k*log_k(N)) amortized instead.
-- `contains(const T& element)`: return true iff the given element is in the priority queue. Time: O(1) amortized.
-- `top()`: return the top element. Time: O(1).
-- `pop()`: remove the top element. Time: O(logN) amortized if using BinaryHeap, O(k*log_k(N)) amortized instead.
+-   `size()`: return the number of elements in the heap. Time complexity: O(1).
+-   `empty()`: return true iff the heap is empty. Time complexity: O(1).
+-   `push(const Key& key, const T& element)`: add a new element to the heap and associates the given key to it. Time complexity: O(logN) amortized if using BinaryHeap, O(k\*log_k(N)) amortized instead.
+-   `update_key(const Key& key, const T& element)`: update the key of an existing element in the priority queue. Time: O(logN) amortized if using BinaryHeap, O(k\*log_k(N)) amortized instead.
+-   `contains(const T& element)`: return true iff the given element is in the priority queue. Time: O(1) amortized.
+-   `top()`: return the top element. Time: O(1).
+-   `pop()`: remove the top element. Time: O(logN) amortized if using BinaryHeap, O(k\*log_k(N)) amortized instead.
 
 **Note**: in order to keep `update_key`'s complexity logarithmic instead of linear, there's a quite important caveat: arbitrary key updates are not allowed.
 If you're using a Priority Queue based on a Max-Heap, you can only perform a "increase key" operation.
@@ -164,10 +177,10 @@ Arbitrary key updates may result in undefined behaviour.
 
 A number of utility factory functions are provided to easily create the type of Priority Queue you want, namely:
 
-- `make_min_priority_queue<bool IsAlreadyHeap = false, typename Key, typename Value, typename THash = std::hash<Value>>`: create a Priority Queue based on a Min Heap starting from a vector of values.
-- `make_max_priority_queue<bool IsAlreadyHeap = false, typename Key, typename Value, typename THash = std::hash<Value>>`: create a Priority Queue based on a Max Heap starting from a vector of values.
-- `make_min_k_priority_queue<std::size_t K, bool IsAlreadyHeap = false, typename Key, typename Value, typename THash = std::hash<Value>>`: create a Priority Queue based on a Min K-ary Heap starting from a vector of keys and a vector of values.
-- `make_max_k_priority_queue<std::size_t K, bool IsAlreadyHeap = false, typename Key, typename Value, typename THash = std::hash<Value>>`: create a Priority Queue based on a Max K-Heap starting from a vector of keys and a vector of values.
+-   `make_min_priority_queue<bool IsAlreadyHeap = false, typename Key, typename Value, typename THash = std::hash<Value>>`: create a Priority Queue based on a Min Heap starting from a vector of values.
+-   `make_max_priority_queue<bool IsAlreadyHeap = false, typename Key, typename Value, typename THash = std::hash<Value>>`: create a Priority Queue based on a Max Heap starting from a vector of values.
+-   `make_min_k_priority_queue<std::size_t K, bool IsAlreadyHeap = false, typename Key, typename Value, typename THash = std::hash<Value>>`: create a Priority Queue based on a Min K-ary Heap starting from a vector of keys and a vector of values.
+-   `make_max_k_priority_queue<std::size_t K, bool IsAlreadyHeap = false, typename Key, typename Value, typename THash = std::hash<Value>>`: create a Priority Queue based on a Max K-Heap starting from a vector of keys and a vector of values.
 
 Each of these functions supports both copy and move semantics for the given inputs.
 
@@ -175,7 +188,7 @@ Each of these functions supports both copy and move semantics for the given inpu
 This means that your values' type must have an hash implementation. If you use trivial types (int, double, etc) you're already covered, otherwise you will
 have to provide your own custom hash functor as the last template argument of the utility factory functions defined above.
 
-## Example usage of PriorityQueue with BinaryHeap
+### Example usage of PriorityQueue with BinaryHeap
 
 ```c++
 #include <iostream>
@@ -247,7 +260,7 @@ int main() {
 }
 ```
 
-## Example usage of PriorityQueue with KHeap
+### Example usage of PriorityQueue with KHeap
 
 ```c++
 #include <iostream>
@@ -322,19 +335,19 @@ int main() {
 }
 ```
 
-# Best practices adopted
+## Best practices adopted
 
-- Most of the methods offered by this library are marked with `noexcept`.
-- Every overriden method is marked with `override`.
-- This library doesn't perform any heap allocation, at least not directly. Everything is stack-allocated
-and built around containers of the standard library (`std::vector` and `std::unordered_map`).
-- When possible, if-expressions are performed at compile time.
-- Bit-shifting is used instead of division by 2 when possible.
-- Heap's methods `heapify_up` and `heapify_down` use iteration instead of recursion.
-- Even though the class defined in the `heap` and `priority_queue` namespaces may require a lot of template arguments,
-for most practical cases they can be automatically inferred by the compiler. See the examples.
+-   Most of the methods offered by this library are marked with `noexcept`.
+-   Every overriden method is marked with `override`.
+-   This library doesn't perform any heap allocation, at least not directly. Everything is stack-allocated
+    and built around containers of the standard library (`std::vector` and `std::unordered_map`).
+-   When possible, if-expressions are performed at compile time.
+-   Bit-shifting is used instead of division by 2 when possible.
+-   Heap's methods `heapify_up` and `heapify_down` use iteration instead of recursion.
+-   Even though the class defined in the `heap` and `priority_queue` namespaces may require a lot of template arguments,
+    for most practical cases they can be automatically inferred by the compiler. See the examples.
 
-# Test
+## Test
 
 This project has been developer with Microsoft Visual Studio 2019, but it supports multiplatform builds via [`Bazel`](https://bazel.build/).
 
@@ -342,11 +355,11 @@ The [./tests](./tests) folder contains some unit tests. Coverage isn't 100% as o
 with more than 90k elements.
 To run the [`googletest`](https://github.com/google/googletest) test suite, just execute the following command:
 
-- `bazel test //..`
+-   `bazel test //..`
 
 A note for Windows Users: run that command either in Powershell or in CMD, because it won't work in Git Bash.
 
-# Contributing
+## Contributing
 
 Contributions, issues and feature requests are welcome!
 The code is short and throughly commented, so you should feel quite comfortable looking at it.
