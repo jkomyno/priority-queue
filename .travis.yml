@@ -89,10 +89,8 @@ jobs:
         overwrite: true
         on:
           # Releases deployment will trigger if and only if the build is a tagged build on branch master
-        tags: false # (TODO: tags: true)
         branch: master
-        # releases will only be visible to collaborators (TODO: remove)
-        draft: true
+        tags: true
 
 before_script:
   - eval "${MATRIX_EVAL}"
