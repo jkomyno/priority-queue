@@ -4,10 +4,36 @@ cache:
   - directories:
     - $HOME/.cache
 
+# avoid building again after we just published something
+branches:
+  except:
+    - /^*-v[0-9]*/
+    - /^*-untagged*/
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+
+stages:
+  - test
+  - name: deploy
+    if: branch = master
+
+env:
+  global:
+    # Bazel version
+    - V_BAZEL=3.1.0
+
+# Execute unit tests in Linux and MacOSX with the latest stable versions of
+# g++ and clang++
 jobs:
   include:
-    - os: linux
+    - stage: test
+      os: linux
       dist: xenial
+      before_install: chmod +x ./.ci/install_linux.sh
+      install: ./.ci/install_linux.sh
       addons:
         apt:
           sources:
@@ -18,8 +44,11 @@ jobs:
         - MATRIX_EVAL="CXX=g++-9"
         - CC="g++-9"
 
-    - os: linux
+    - stage: test
+      os: linux
       dist: xenial
+      before_install: chmod +x ./.ci/install_linux.sh
+      install: ./.ci/install_linux.sh
       addons:
         apt:
           sources:
@@ -31,32 +60,39 @@ jobs:
       env:
         - MATRIX_EVAL="CXX=clang++-10"
         - CC="clang++-10"
-
-    - os: osx
+    
+    - stage: test
+      os: osx
       osx_image: xcode11.3
+      before_install: chmod +x ./.ci/install_darwin.sh
+      install: ./.ci/install_darwin.sh
       env:
         - MATRIX_EVAL="CXX=clang++"
         - CC="clang++"
 
-before_install:
-  - OS=linux
-  - ARCH=x86_64
-  - V_BAZEL=3.1.0
-
-  # install bazel
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then OS=darwin; fi
-  - GH_BASE="https://github.com/bazelbuild/bazel/releases/download/$V_BAZEL"
-  - GH_ARTIFACT="bazel-$V_BAZEL-installer-$OS-$ARCH.sh"
-  - URL="$GH_BASE/$GH_ARTIFACT"
-  - echo $URL
-  - wget -O install.sh $URL
-  - chmod +x install.sh
-  - ./install.sh --user
-  - rm -f install.sh
-
-  # install clang-format
-  - if [[ "$OS" == "linux" ]]; then sudo apt install clang-format; else brew install clang-format; fi
-  - clang-format --version
+    - stage: deploy
+      before_script: skip
+      script: skip
+      install: skip
+      before_deploy:
+        # prepare release folder
+        - tar -czf ./priority-queue.tar.gz ./priority_queue/*.h
+        - export DEPLOY_PACKAGE=./priority-queue.tar.gz
+        - echo "DEPLOY_PACKAGE is ${DEPLOY_PACKAGE}"
+      deploy:
+        provider: releases
+        api_key: $GITHUB_TOKEN
+        file:
+        - README.md
+        - $DEPLOY_PACKAGE
+        skip_cleanup: true
+        overwrite: true
+        on:
+          # Releases deployment will trigger if and only if the build is a tagged build on branch master
+        tags: false # (TODO: tags: true)
+        branch: master
+        # releases will only be visible to collaborators (TODO: remove)
+        draft: true
 
 before_script:
   - eval "${MATRIX_EVAL}"

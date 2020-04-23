@@ -16,5 +16,5 @@ chmod +x install_bazel.sh
 rm -f install_bazel.sh
 
 # install clang-format
- brew install clang-format
- clang-format --version
+brew install clang-format
+clang-format --version
