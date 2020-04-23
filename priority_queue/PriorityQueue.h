@@ -84,12 +84,12 @@ namespace priority_queue {
         }
 
         // initialize class
-        void init() {
+        void init(compare_factory_t&& comp_factory) {
             // set comparator in base class after initialization of key_map and index_map.
-            // We can't set it directly in super(inputs, comp(key_map) because we need
+            // We can't set it directly in super(inputs, comp_factory(key_map) because we need
             // to initialize key_map first, and member objects can only be initialized after
             // the parent class is completely initialized.
-            this->comp = comp(key_map);
+            this->comp = comp_factory(key_map);
             super::init();
         }
 
@@ -109,19 +109,19 @@ namespace priority_queue {
         PriorityQueue() = delete;
 
         explicit PriorityQueue(const std::vector<Key>& keys, const std::vector<T>& inputs,
-                               compare_factory_t&& comp) :
+                               compare_factory_t&& comp_factory) :
             super(inputs),
             key_map(build_key_map<Key, T, THash>(keys, this->nodes)),
             index_map(build_index_map<T, THash>(this->nodes)) {
-            init();
+            init(std::move(comp_factory));
         }
 
         explicit PriorityQueue(std::vector<Key>&& keys, std::vector<T>&& inputs,
-                               compare_factory_t&& comp) :
+                               compare_factory_t&& comp_factory) :
             super(std::move(inputs)),
             key_map(build_key_map<Key, T, THash>(std::move(keys), this->nodes)),
             index_map(build_index_map<T, THash>(this->nodes)) {
-            init();
+            init(std::move(comp_factory));
         }
 
         ~PriorityQueue() = default;
