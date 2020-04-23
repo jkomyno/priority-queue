@@ -22,8 +22,8 @@ Doing that manually can be non-trivial and usually requires at least O(N) time (
 
 # Heap
 
-The `heap` namespace contains the abstract class [`Heap`](./PriorityQueue/Heap.h) and the concrete implementations [`BinaryHeap`](./PriorityQueue/BinaryHeap.h) (for Binary Heaps)
-and [`KHeap`](./PriorityQueue/KHeap.h) (for K-ary Heaps). A Binary Heap can be seen as a complete binary tree which satisfies the heap ordering property.
+The `heap` namespace contains the abstract class [`Heap`](./priority_queue/Heap.h) and the concrete implementations [`BinaryHeap`](./priority_queue/BinaryHeap.h) (for Binary Heaps)
+and [`KHeap`](./priority_queue/KHeap.h) (for K-ary Heaps). A Binary Heap can be seen as a complete binary tree which satisfies the heap ordering property.
 A K-ary Heap is, on the other hand, a generalization of the Binary Heap in which the nodes have `K` children instead of 2.
 
 Both `BinaryHeap` and `KHeap` are either Min Heaps or Max Heaps depending on comparator used to initialize them,
@@ -141,7 +141,7 @@ int main() {
 
 # Priority Queue
 
-The `priority_queue` namespace contains the concrete class [`PriorityQueue`](./PriorityQueue/PriorityQueue.h).
+The `priority_queue` namespace contains the concrete class [`PriorityQueue`](./priority_queue/PriorityQueue.h).
 It implements a Priority Queue data-structure based on a generic Heap.
 It privately extends either `BinaryHeap` or `KHeap`,
 depending on the first template argument received. This allows `PriorityQueue` to access the `protected` vector of nodes stored in `Heap`.
