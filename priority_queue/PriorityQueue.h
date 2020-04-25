@@ -1,4 +1,4 @@
-#ifndef PRIORITY_QUEUE_H
+﻿#ifndef PRIORITY_QUEUE_H
 #define PRIORITY_QUEUE_H
 
 #include <algorithm>      // std::swap, std::find
@@ -228,17 +228,29 @@ namespace priority_queue {
         }
     };
 
+    namespace detail {
+
+        inline auto min_heap_comp_factory = [](auto& key_map) {
+            return [&key_map](auto&& a, auto&& b) -> bool {
+                return key_map.at(a) > key_map.at(b);
+            };
+        };
+
+        inline auto max_heap_comp_factory = [](auto& key_map) {
+            return [&key_map](auto&& a, auto&& b) -> bool {
+                return key_map.at(a) < key_map.at(b);
+            };
+        };
+
+    }  // namespace detail
+
     // create a Priority Queue based on a Min Heap. It copies the given vectors.
     template <bool IsAlreadyHeap = false, typename Key, typename Value,
               typename THash = std::hash<Value>>
     auto make_min_priority_queue(const std::vector<Key>& keys, const std::vector<Value>& inputs) {
         using pq = PriorityQueue<heap::BinaryHeap<Value, IsAlreadyHeap>, Key, Value, IsAlreadyHeap,
                                  THash, Type::min_heap>;
-        return pq(keys, inputs, [](auto& key_map) {
-            return [&key_map](auto&& a, auto&& b) -> bool {
-                return key_map.at(a) > key_map.at(b);
-            };
-        });
+        return pq(keys, inputs, detail::min_heap_comp_factory);
     }
 
     // create a Priority Queue based on a Min Heap. It moves the given vectors.
@@ -247,11 +259,7 @@ namespace priority_queue {
     auto make_min_priority_queue(std::vector<Key>&& keys = {}, std::vector<Value>&& inputs = {}) {
         using pq = PriorityQueue<heap::BinaryHeap<Value, IsAlreadyHeap>, Key, Value, IsAlreadyHeap,
                                  THash, Type::min_heap>;
-        return pq(std::move(keys), std::move(inputs), [](auto& key_map) {
-            return [&key_map](auto&& a, auto&& b) -> bool {
-                return key_map.at(a) > key_map.at(b);
-            };
-        });
+        return pq(std::move(keys), std::move(inputs), detail::min_heap_comp_factory);
     }
 
     // create a Priority Queue based on a Max Heap. It copies the given vectors.
@@ -260,11 +268,7 @@ namespace priority_queue {
     auto make_max_priority_queue(const std::vector<Key>& keys, const std::vector<Value>& inputs) {
         using pq = PriorityQueue<heap::BinaryHeap<Value, IsAlreadyHeap>, Key, Value, IsAlreadyHeap,
                                  THash, Type::max_heap>;
-        return pq(keys, inputs, [](auto& key_map) {
-            return [&key_map](auto&& a, auto&& b) -> bool {
-                return key_map.at(a) < key_map.at(b);
-            };
-        });
+        return pq(keys, inputs, detail::max_heap_comp_factory);
     }
 
     // create a Priority Queue based on a Max Heap. It moves the given vectors.
@@ -273,11 +277,7 @@ namespace priority_queue {
     auto make_max_priority_queue(std::vector<Key>&& keys = {}, std::vector<Value>&& inputs = {}) {
         using pq = PriorityQueue<heap::BinaryHeap<Value, IsAlreadyHeap>, Key, Value, IsAlreadyHeap,
                                  THash, Type::max_heap>;
-        return pq(std::move(keys), std::move(inputs), [](auto& key_map) {
-            return [&key_map](auto&& a, auto&& b) -> bool {
-                return key_map.at(a) < key_map.at(b);
-            };
-        });
+        return pq(std::move(keys), std::move(inputs), detail::max_heap_comp_factory);
     }
 
     // create a Priority Queue based on a Min K-Heap. It copies the given vectors.
@@ -286,11 +286,7 @@ namespace priority_queue {
     auto make_min_k_priority_queue(const std::vector<Key>& keys, const std::vector<Value>& inputs) {
         using pq = PriorityQueue<heap::KHeap<K, Value, IsAlreadyHeap>, Key, Value, IsAlreadyHeap,
                                  THash, Type::min_heap>;
-        return pq(keys, inputs, [](auto& key_map) {
-            return [&key_map](auto&& a, auto&& b) -> bool {
-                return key_map.at(a) > key_map.at(b);
-            };
-        });
+        return pq(keys, inputs, detail::min_heap_comp_factory);
     }
 
     // create a Priority Queue based on a Min K-Heap. It moves the given vectors.
@@ -299,11 +295,7 @@ namespace priority_queue {
     auto make_min_k_priority_queue(std::vector<Key>&& keys = {}, std::vector<Value>&& inputs = {}) {
         using pq = PriorityQueue<heap::KHeap<K, Value, IsAlreadyHeap>, Key, Value, IsAlreadyHeap,
                                  THash, Type::min_heap>;
-        return pq(std::move(keys), std::move(inputs), [](auto& key_map) {
-            return [&key_map](auto&& a, auto&& b) -> bool {
-                return key_map.at(a) > key_map.at(b);
-            };
-        });
+        return pq(std::move(keys), std::move(inputs), detail::min_heap_comp_factory);
     }
 
     // create a Priority Queue based on a Max K-Heap. It copies the given vectors.
@@ -312,11 +304,7 @@ namespace priority_queue {
     auto make_max_k_priority_queue(const std::vector<Key>& keys, const std::vector<Value>& inputs) {
         using pq = PriorityQueue<heap::KHeap<K, Value, IsAlreadyHeap>, Key, Value, IsAlreadyHeap,
                                  THash, Type::max_heap>;
-        return pq(keys, inputs, [](auto& key_map) {
-            return [&key_map](auto&& a, auto&& b) -> bool {
-                return key_map.at(a) < key_map.at(b);
-            };
-        });
+        return pq(keys, inputs, detail::max_heap_comp_factory);
     }
 
     // create a Priority Queue based on a Max K-Heap. It moves the given vectors.
@@ -325,11 +313,7 @@ namespace priority_queue {
     auto make_max_k_priority_queue(std::vector<Key>&& keys = {}, std::vector<Value>&& inputs = {}) {
         using pq = PriorityQueue<heap::KHeap<K, Value, IsAlreadyHeap>, Key, Value, IsAlreadyHeap,
                                  THash, Type::max_heap>;
-        return pq(std::move(keys), std::move(inputs), [](auto& key_map) {
-            return [&key_map](auto&& a, auto&& b) -> bool {
-                return key_map.at(a) < key_map.at(b);
-            };
-        });
+        return pq(std::move(keys), std::move(inputs), detail::max_heap_comp_factory);
     }
 
 }  // namespace priority_queue
