@@ -1,0 +1,51 @@
+version: '{build}'
+
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      configuration: Debug
+      platform: x64
+      CXX_FLAGS: "/std:c++17 /Od /W4 /WX-"
+      LINKER_FLAGS: ""
+      GENERATOR: Visual Studio 16 2019
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      configuration: Release
+      platform: x64
+      CXX_FLAGS: "/std:c++17 /O2 /Oi /Oy /GL /W4"
+      LINKER_FLAGS: ""
+      GENERATOR: Visual Studio 16 2019
+
+install:
+- ps: |
+    Write-Output "Generator: $env:generator"
+    Write-Output "Env:Configuration: $env:configuration"
+    Write-Output "Env: $env"
+
+    # install Bazel
+    appveyor DownloadFile https://github.com/bazelbuild/bazel/releases/download/3.1.0/bazel-3.1.0-windows-x86_64.exe -FileName bazel.exe
+before_build:
+- ps: |
+     $env:root=$env:APPVEYOR_BUILD_FOLDER
+     Write-Output "env:root: $env:root"
+
+test_script:
+- ps: |
+    # Test with Bazel
+    & $env:root\bazel.exe test //...
+
+    # bazel writes to StdErr and PowerShell interprets it as an error
+    if ($LastExitCode -eq 0) {
+        $host.SetShouldExit(0)
+    } else { # a real error
+        throw "Exec: $ErrorMessage"
+    }
+
+skip_commits:
+  files:
+    - '**/*.md'
+
+artifacts:
+  - path: 'bazel-testlogs/**/test.log'
+    name: test_logs
+  - path: 'bazel-testlogs/**/test.xml'
+    name: test_results
