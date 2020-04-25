@@ -4,21 +4,15 @@ cache:
   - directories:
     - $HOME/.cache
 
-# avoid building again after we just published something
-branches:
-  except:
-    - /^*-v[0-9]*/
-    - /^*-untagged*/
-
 notifications:
   email:
     on_success: change
     on_failure: change
 
 stages:
-  - test
+  - name: test
   - name: deploy
-    if: branch = master
+    if: tag IS present
 
 env:
   global:
@@ -88,9 +82,8 @@ jobs:
         skip_cleanup: true
         overwrite: true
         on:
-          # Releases deployment will trigger if and only if the build is a tagged build on branch master
-        branch: master
-        tags: true
+          # Releases deployment will trigger if and only if the build is tagged
+          tags: true
 
 before_script:
   - eval "${MATRIX_EVAL}"
