@@ -1,6 +1,7 @@
 ﻿# Priority Queue
 
-[![Build Status](https://travis-ci.org/jkomyno/priority-queue.svg?branch=master)](https://travis-ci.org/jkomyno/priority-queue)
+[![Build Status Travis](https://travis-ci.org/jkomyno/priority-queue.svg?branch=master)](https://travis-ci.org/jkomyno/priority-queue)
+[![Build status AppVeyor](https://ci.appveyor.com/api/projects/status/p4j96cu6e3x1k34w?svg=true)](https://ci.appveyor.com/project/jkomyno/priority-queue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/939d15efb7374e85a92250ac7bbecbe0)](https://www.codacy.com/manual/jkomyno/priority-queue?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jkomyno/priority-queue&amp;utm_campaign=Badge_Grade)
 
