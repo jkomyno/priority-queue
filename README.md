@@ -5,6 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/939d15efb7374e85a92250ac7bbecbe0)](https://www.codacy.com/manual/jkomyno/priority-queue?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jkomyno/priority-queue&amp;utm_campaign=Badge_Grade)
 
+**Deprecation Notice**: please use the container classes `BinaryHeap`, `KHeap`, and `PriorityQueue` in [`jkomyno/jkds`](https://github.com/jkomyno/jkds).
+
 This package provides a header-only, generic and dependency-free C++17 implementation of Heaps and Priority Queues.
 It exposes two namespaces: `heap` and `priority_queue`.
 
